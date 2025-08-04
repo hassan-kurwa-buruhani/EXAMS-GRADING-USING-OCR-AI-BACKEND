@@ -129,7 +129,7 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ('id', 'username', 'first_name', 'last_name', 'email', 'role', 'new_password', 'verify_password')
+        fields = ('id', 'username', 'first_name', 'last_name', 'email', 'role', 'student_registration_number', 'new_password', 'verify_password')
 
     def validate(self, data):
         new_password = data.get('new_password')
@@ -162,3 +162,15 @@ class UserSerializer(serializers.ModelSerializer):
 
         instance.save()
         return instance
+
+
+
+
+# # serializers.py
+# from rest_framework import serializers
+# from .models import StudentAnswerPDF
+
+# class StudentAnswerPDFSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = StudentAnswerPDF
+#         fields = ['id', 'student_id', 'pdf_file', 'created_at']

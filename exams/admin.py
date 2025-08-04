@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.contrib import admin, messages
-from .models import Question, Course, Exam, CollegeCampus, CampusSchool, CampusDepartment
+from .models import Question, Course, Exam, CollegeCampus, CampusSchool, CampusDepartment, StudentAnswerDocument
 from .ocr_utils import extract_questions_from_pdf
 
 
@@ -10,6 +10,7 @@ admin.site.register(Question)
 admin.site.register(CollegeCampus)
 admin.site.register(CampusSchool)
 admin.site.register(CampusDepartment)
+admin.site.register(StudentAnswerDocument)
 
 
 

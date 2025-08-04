@@ -1,12 +1,13 @@
 from django.urls import path, include
 from users.views import CustomTokenObtainPairView, UserProfileView
 from django.urls import path, include
-from exams.views.user_views import *
 from exams.views.course_exam_views import *
 from exams.views.question_exam_views import *
+from exams.views.student_answer_view import CreateStudentPDF
 from rest_framework.routers import DefaultRouter
 from rest_framework_simplejwt.views import TokenRefreshView
 from exams.views.ocr_view import trigger_question_extraction
+# from users.views import CreateStudentPDF
 
 router = DefaultRouter()
 router.register('courses', CourseViewSet, basename='course')
@@ -29,6 +30,11 @@ urlpatterns = [
     # path('answers/', AnswerCreateView.as_view(), name='answers'),
 
     path('trigger-ocr-question-extraction/', trigger_question_extraction, name='trigger-ocr'),
+
+
+    path('create-student-pdf/', CreateStudentPDF.as_view(), name='create-student-pdf'),
+
+    path('create-student-answer-pdf/', CreateStudentPDF.as_view(), name='create-student-answer-pdf'),
 
 ]
 

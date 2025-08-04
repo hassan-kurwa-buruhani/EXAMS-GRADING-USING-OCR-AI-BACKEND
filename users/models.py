@@ -24,6 +24,13 @@ class CustomUserManager(BaseUserManager):
         if not extra_fields.get('gender'):
             raise ValueError('Gender is required for normal users')
 
+        # Check if the role is 'Student' and require registration number
+        if extra_fields.get('role') == Roles.STUDENT:
+            if not extra_fields.get('student_registration_number'):
+                raise ValueError('Student registration number is required for students')
+        elif extra_fields.get('student_registration_number'):
+            raise ValueError('Only students can have a registration number')
+
         email = self.normalize_email(email)
         user = self.model(email=email, **extra_fields)
         user.set_password(password)  # hash password
@@ -48,6 +55,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     last_name = models.CharField(max_length=100)
     gender = models.CharField(max_length=10, choices=GenderChoices.choices)
     role = models.CharField(max_length=20, choices=Roles.choices)
+    student_registration_number = models.CharField(max_length=100, unique=True, null=True, blank=True)
     device_id = models.CharField(max_length=255, null=True, blank=True, unique=True)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
@@ -59,3 +67,16 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     def __str__(self):
         return f"{self.email} ({self.role})"
+
+
+
+
+
+# models.py
+# from django.db import models
+
+# class StudentAnswerPDF(models.Model):
+#     student_id = models.CharField(max_length=50)
+#     pdf_file = models.FileField(upload_to='student_pdfs/')
+#     created_at = models.DateTimeField(auto_now_add=True)
+
