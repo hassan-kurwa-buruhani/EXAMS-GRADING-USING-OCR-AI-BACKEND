@@ -17,5 +17,8 @@ class StudentAnswerDocument(models.Model):
     ocr_extracted = models.BooleanField(default=False)  # mark if OCR was already done
     notes = models.TextField(blank=True, null=True)  # Optional
 
+    class Meta:
+        unique_together = ('exam', 'student')
+
     def __str__(self):
         return f"Answer by {self.student.username} for {self.exam.title}"

@@ -11,14 +11,6 @@ class QuestionListView(generics.ListAPIView):
     serializer_class = QuestionSerializer
 
 
-# Create a new answer
-# class AnswerCreateView(generics.CreateAPIView):
-#     queryset = Answer.objects.all()
-#     serializer_class = AnswerSerializer
-
-
-
-
 
 # questions per exam view(only for lecturers to view the questions of the exams they created)
 class QuestionPerExamViewSet(viewsets.ModelViewSet):
