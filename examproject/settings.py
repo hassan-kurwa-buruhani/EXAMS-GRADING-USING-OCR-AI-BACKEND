@@ -31,6 +31,16 @@ DEBUG = True
 ALLOWED_HOSTS = ['*']   #only for local development
 
 
+# Load GCS credentials
+GOOGLE_APPLICATION_CREDENTIALS = config('GOOGLE_APPLICATION_CREDENTIALS')
+GCS_BUCKET_NAME = config('GCS_BUCKET_NAME')
+
+
+OPENAI_API_KEY = config('OPENAI_API_KEY')
+# Apply to the environment (important for google.cloud.storage)
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = GOOGLE_APPLICATION_CREDENTIALS
+
+
 # Application definition
 
 INSTALLED_APPS = [

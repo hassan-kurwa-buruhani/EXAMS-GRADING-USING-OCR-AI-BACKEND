@@ -13,6 +13,11 @@ __pycache__/
 .env.test
 .env.production
 
+
+
+credentials/
+
+
 # Database
 *.db
 *.sqlite
