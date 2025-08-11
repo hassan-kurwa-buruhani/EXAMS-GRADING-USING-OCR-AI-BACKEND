@@ -2,6 +2,7 @@ from django.contrib import admin
 from django.contrib import admin, messages
 from .models import Question, Course, Exam, CollegeCampus, CampusSchool, CampusDepartment, StudentAnswerDocument, StudentAnswer
 from .ocr_utils import extract_questions_from_pdf
+from .grading_service import grade_answer
 
 
 # Register your models here.
@@ -69,12 +70,81 @@ class StudentAnswerDocumentAdmin(admin.ModelAdmin):
 
 
 
+# @admin.register(StudentAnswer)
+# class StudentAnswerAdmin(admin.ModelAdmin):
+#     list_display = ('student', 'exam', 'question', 'graded', 'marks_awarded')
+#     list_filter = ('exam', 'graded')
+#     search_fields = ('student__username', 'question__question_text')
+#     actions = ['extract_answers_per_question', 'grade_selected_answers']
+
+
+#     def grade_selected_answers(self, request, queryset):
+#         graded_count = 0
+#         for answer in queryset:
+#             if answer.graded:
+#                 continue  # skip already graded
+
+#             marks, remarks = grade_answer(
+#                 question_text=answer.question.question_text,
+#                 max_marks=answer.question.marks,
+#                 student_answer=answer.answer_text
+#             )
+#             answer.marks_awarded = marks
+#             answer.remarks = remarks
+#             answer.graded = True
+#             answer.save()
+#             graded_count += 1
+
+#         self.message_user(request, f"✅ {graded_count} answers graded.")
+
+#     grade_selected_answers.short_description = "Grade selected answers using AI"
+
+
+
+
+from django.contrib import admin
+from .models import StudentAnswer
+from .grading_service import grade_answer, grade_student_answers
+
 @admin.register(StudentAnswer)
 class StudentAnswerAdmin(admin.ModelAdmin):
     list_display = ('student', 'exam', 'question', 'graded', 'marks_awarded')
     list_filter = ('exam', 'graded')
     search_fields = ('student__username', 'question__question_text')
-    actions = ['extract_answers_per_question']
+    actions = ['extract_answers_per_question', 'grade_selected_answers']
+
+    def grade_selected_answers(self, request, queryset):
+        graded_count = 0
+        # Track which (student, exam) combos need their totals updated
+        to_update = set()
+
+        for answer in queryset:
+            if answer.graded:
+                continue  # skip already graded
+
+            marks, remarks = grade_answer(
+                question_text=answer.question.question_text,
+                max_marks=answer.question.marks,
+                student_answer=answer.answer_text
+            )
+            answer.marks_awarded = marks
+            answer.remarks = remarks
+            answer.graded = True
+            answer.save()
+            graded_count += 1
+
+            # Record for total marks update
+            to_update.add((answer.student_id, answer.exam_id))
+
+        # Update totals for each student+exam graded
+        for student_id, exam_id in to_update:
+            grade_student_answers(student_id, exam_id)
+
+        self.message_user(request, f"✅ {graded_count} answers graded and totals updated.")
+
+    grade_selected_answers.short_description = "Grade selected answers using AI"
+
+
 
 
 

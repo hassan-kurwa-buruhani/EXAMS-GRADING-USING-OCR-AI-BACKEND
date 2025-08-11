@@ -25,6 +25,9 @@ class StudentAnswerDocument(models.Model):
     ocr_extracted = models.BooleanField(default=False)  # mark if OCR was already done
     notes = models.TextField(blank=True, null=True)  # Optional
 
+
+    total_marks = models.FloatField(default=0.0)
+
     class Meta:
         unique_together = ('exam', 'student')
 
@@ -217,65 +220,4 @@ class StudentAnswer(models.Model):
         unique_together = ('exam', 'student', 'question')
 
 
-    ...
     
-    def grade_with_ai(self):
-        if not self.answer_text:
-            self.remarks = "No answer provided."
-            self.marks_awarded = 0
-            self.graded = True
-            self.save()
-            return
-        
-        prompt = f"""
-You are an expert academic grader.
-
-Here is the exam question:
----
-{self.question.question_text}
----
-
-Maximum marks: {self.question.marks}
-
-Here is the student's answer:
----
-{self.answer_text}
----
-
-Your task:
-1. Grade the answer fairly out of {self.question.marks}.
-2. Provide short, constructive feedback.
-3. Return a JSON like this: 
-   {{
-     "score": <number>,
-     "remarks": "<string>"
-   }}
-Only return valid JSON. Do not include any explanation.
-"""
-        try:
-            response = openai.ChatCompletion.create(
-                model="gpt-4",
-                messages=[{"role": "user", "content": prompt}],
-                temperature=0.2,
-            )
-            import json
-            raw_reply = response.choices[0].message.content.strip()
-            result = json.loads(raw_reply)
-
-            self.marks_awarded = float(result["score"])
-            self.remarks = result["remarks"]
-            self.graded = True
-            self.save()
-
-            return f"✅ Graded with {result['score']} marks."
-        except Exception as e:
-            self.remarks = f"❌ Error grading with AI: {str(e)}"
-            self.marks_awarded = None
-            self.graded = False
-            self.save()
-            return self.remarks
-
-
-    def __str__(self):
-        return f"Answer by {self.student.username} to Q{self.question.question_number}"
-
