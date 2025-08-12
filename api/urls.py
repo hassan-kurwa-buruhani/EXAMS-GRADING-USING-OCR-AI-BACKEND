@@ -4,6 +4,7 @@ from django.urls import path, include
 from exams.views.course_exam_views import *
 from exams.views.question_exam_views import *
 from exams.views.student_answer_view import CreateStudentPDF
+from exams.views.student_answer_view import GetStudentsAnswerForExam
 from rest_framework.routers import DefaultRouter
 from rest_framework_simplejwt.views import TokenRefreshView
 from exams.views.ocr_view import trigger_question_extraction
@@ -15,6 +16,7 @@ router.register('profile', UserProfileView, basename='profile')
 router.register('exams', ExamViewSet, basename='exam')
 router.register(r'exams/(?P<exam_id>[^/.]+)/questions', QuestionPerExamViewSet, 
 basename='exam-questions')
+router.register(r'exams/(?P<exam_id>[^/.]+)/answers', GetStudentsAnswerForExam, basename='exam-answers')
 router.register('exams-invigilator', InvigilatorExamViewSet, basename='exam-invigilator')
 
 router.register(r'exams/(?P<exam_id>\d+)/questions', QuestionPerExamViewsetForAnswerGeneration, basename='questions')

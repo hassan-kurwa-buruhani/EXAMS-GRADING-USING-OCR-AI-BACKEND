@@ -6,8 +6,11 @@ from rest_framework.response import Response
 from rest_framework import status
 from exams.models import StudentAnswerDocument
 from exams.serializers import StudentAnswerDocumentSerializer
+from rest_framework.exceptions import PermissionDenied
+from django.shortcuts import get_object_or_404
 from exams.models import Exam
 from users.models import User
+from rest_framework import viewsets, permissions
 from PIL import Image
 from reportlab.lib.pagesizes import A4
 from reportlab.pdfgen import canvas
@@ -85,3 +88,23 @@ class CreateStudentPDF(APIView):
             "message": "PDF created and saved successfully.",
             "data": serializer.data
         }, status=status.HTTP_201_CREATED)
+    
+
+
+class GetStudentsAnswerForExam(viewsets.ModelViewSet):
+    serializer_class = StudentAnswerDocumentSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        user = self.request.user
+        exam_id = self.kwargs.get('exam_id')
+
+        # Get the exam or return 404 if it doesn't exist
+        exam = get_object_or_404(Exam, id=exam_id)
+
+        # Check if the requesting user is the creator (lecturer)
+        if exam.created_by != user:
+            raise PermissionDenied("You do not have permission to view questions for this exam.")
+
+        # Fetch all answer sheets associated with the exam
+        return StudentAnswerDocument.objects.filter(exam=exam)

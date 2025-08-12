@@ -13,6 +13,20 @@ class StudentAnswerDocumentSerializer(serializers.ModelSerializer):
         required=False,
     )
 
+    # TODO
+    # invigilator_full_name = serializers.SerializerMethodField()
+
+
     class Meta:
         model = StudentAnswerDocument
         fields = '__all__'
+
+
+class StudentAnswerSerializer(serializers.ModelSerializer):
+    exam = serializers.SlugRelatedField(queryset=Exam.objects.all(), slug_field='title')
+    student = serializers.SlugRelatedField(queryset=User.objects.filter(role='Student'), slug_field='student_registration_number')
+    invigilator = serializers.SlugRelatedField(
+        queryset=User.objects.filter(role='Invigilator'),
+        slug_field='username',
+        required=False,
+    )
