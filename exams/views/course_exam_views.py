@@ -43,4 +43,25 @@ class CoursePerLecturerViewSet(viewsets.ModelViewSet):
         user = self.request.user
         return Course.objects.filter(lecturer=user)
     
+# student view for courses
+class StudentCourseViewSet(viewsets.ModelViewSet):
+    queryset = Course.objects.all()
+    serializer_class = CourseSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        user = self.request.user
+        return Course.objects.filter(students=user)
+
+
+# student view for exams
+class StudentExamViewSet(viewsets.ModelViewSet):
+    queryset = Exam.objects.all()
+    serializer_class = ExamSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        user = self.request.user
+        return Exam.objects.filter(course__students=user)
+    
 

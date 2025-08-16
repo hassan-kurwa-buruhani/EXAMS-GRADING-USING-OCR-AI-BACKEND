@@ -24,9 +24,9 @@ class QuestionPerExamViewSet(viewsets.ModelViewSet):
         # Get the exam or return 404 if it doesn't exist
         exam = get_object_or_404(Exam, id=exam_id)
 
-        # Check if the requesting user is the creator (lecturer)
-        if exam.created_by != user:
-            raise PermissionDenied("You do not have permission to view questions for this exam.")
+        # # Check if the requesting user is the creator (lecturer)
+        # if exam.created_by != user:
+        #     raise PermissionDenied("You do not have permission to view questions for this exam.")
 
         # Return only the questions for this exam
         return Question.objects.filter(exam=exam)

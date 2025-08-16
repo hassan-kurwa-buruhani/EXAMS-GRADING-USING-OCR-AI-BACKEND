@@ -1,7 +1,7 @@
 # serializers.py
 
 from rest_framework import serializers
-from exams.models import StudentAnswerDocument, Exam
+from exams.models import *
 from users.models import User
 
 class StudentAnswerDocumentSerializer(serializers.ModelSerializer):
@@ -22,11 +22,22 @@ class StudentAnswerDocumentSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+# class StudentAnswerSerializer(serializers.ModelSerializer):
+#     exam = serializers.SlugRelatedField(queryset=Exam.objects.all(), slug_field='title')
+#     student = serializers.SlugRelatedField(queryset=User.objects.filter(role='Student'), slug_field='student_registration_number')
+#     invigilator = serializers.SlugRelatedField(
+#         queryset=User.objects.filter(role='Invigilator'),
+#         slug_field='username',
+#         required=False,
+#     )
+
+
 class StudentAnswerSerializer(serializers.ModelSerializer):
-    exam = serializers.SlugRelatedField(queryset=Exam.objects.all(), slug_field='title')
-    student = serializers.SlugRelatedField(queryset=User.objects.filter(role='Student'), slug_field='student_registration_number')
-    invigilator = serializers.SlugRelatedField(
-        queryset=User.objects.filter(role='Invigilator'),
-        slug_field='username',
-        required=False,
-    )
+    question_text = serializers.SerializerMethodField()
+
+
+    def get_question_text(self, obj):
+        return obj.question.question_text
+    class Meta:
+        model = StudentAnswer
+        fields = '__all__'

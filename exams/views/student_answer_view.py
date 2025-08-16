@@ -3,9 +3,9 @@
 from rest_framework.views import APIView
 from rest_framework.parsers import MultiPartParser
 from rest_framework.response import Response
-from rest_framework import status
-from exams.models import StudentAnswerDocument
-from exams.serializers import StudentAnswerDocumentSerializer
+from rest_framework import status, generics
+from exams.models import StudentAnswerDocument, StudentAnswer
+from exams.serializers import StudentAnswerDocumentSerializer, StudentAnswerSerializer
 from rest_framework.exceptions import PermissionDenied
 from django.shortcuts import get_object_or_404
 from exams.models import Exam
@@ -108,3 +108,26 @@ class GetStudentsAnswerForExam(viewsets.ModelViewSet):
 
         # Fetch all answer sheets associated with the exam
         return StudentAnswerDocument.objects.filter(exam=exam)
+    
+# student view his/her own answer
+class FetchSTudentAnswerForExam(viewsets.ModelViewSet):
+    serializer_class = StudentAnswerDocumentSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        user = self.request.user
+        exam_id = self.kwargs.get('exam_id')
+
+        # Get the exam or return 404 if it doesn't exist
+        exam = get_object_or_404(Exam, id=exam_id)
+
+        return StudentAnswerDocument.objects.filter(exam=exam, student=user)
+    
+
+class StudentAnswersListView(generics.ListAPIView):
+    serializer_class = StudentAnswerSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        exam_id = self.kwargs['exam_id']
+        return StudentAnswer.objects.filter(exam_id=exam_id, student=self.request.user)

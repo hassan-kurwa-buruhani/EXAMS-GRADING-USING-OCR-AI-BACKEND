@@ -4,4 +4,4 @@ from .question_answer_serializer import *
 from .student_answer_serializer import *
 # from .ocr_serializer import *
 
-__all__ = ['CollegeCampusSerializer', 'CampusSchoolSerializer', 'CampusDepartmentSerializer', 'CourseSerializer', 'ExamSerializer', 'QuestionSerializer', 'StudentAnswerDocumentSerializer']
+__all__ = ['CollegeCampusSerializer', 'CampusSchoolSerializer', 'CampusDepartmentSerializer', 'CourseSerializer', 'ExamSerializer', 'QuestionSerializer', 'StudentAnswerDocumentSerializer', 'StudentAnswerSerializer']
